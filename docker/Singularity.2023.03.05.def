@@ -31,20 +31,17 @@ libxrender1 \
 libgl1-mesa-glx && \
 apt-get clean && rm -rf /var/lib/apt/lists/* && \
 \
-wget -v https://raw.githubusercontent.com/microsoft/ClimaX/main/docker/environment.yml && \
-PIP_NO_CACHE_DIR=off && \
-. /opt/miniconda/etc/profile.d/conda.sh && \
-echo ". /opt/miniconda/etc/profile.d/conda.sh" >> $SINGULARITY_ENVIRONMENT && \
-conda update conda && \
-conda update -n base conda && \
-conda env create -f environment.yml && \
-CONDA_DEFAULT_ENV=climaX && \
-conda activate climaX && \
 git clone https://github.com/mahm1846/ClimaX_maruf.git && \
 cd ClimaX_maruf && \
+\
+PIP_NO_CACHE_DIR=off && \
+. /opt/miniconda/etc/profile.d/conda.sh && \
+conda update conda && \
+conda env create -f docker/environment.yml && \
+conda activate climaX && \
 pip install -e . && \
-apt-get autoremove && apt-get autoclean && conda clean -ay 
-
+apt-get autoremove && apt-get autoclean && conda clean -ay && \
+echo ". /opt/miniconda/etc/profile.d/conda.sh" >> $SINGULARITY_ENVIRONMENT 
 
 %environment
 export CONDA_DEFAULT_ENV=climaX
