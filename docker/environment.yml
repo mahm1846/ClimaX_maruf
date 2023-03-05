@@ -121,7 +121,7 @@ dependencies:
   - pyyaml=6.0=py38h0a891b7_5
   - readline=8.2=h5eee18b_0
   - requests=2.28.1=py38h06a4308_0
-  - scipy=1.10.0=py38h14f4228_0
+  - scipy=1.10
   - setuptools=65.6.3=py38h06a4308_0
   - shapely=1.8.5=py38hafd38ec_2
   - six=1.16.0=pyhd3eb1b0_1
