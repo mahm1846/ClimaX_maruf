@@ -40,8 +40,9 @@ conda update conda && \
 conda env create -f docker/environment.yml && \
 conda activate climaX && \
 pip install -e . && \
-apt-get autoremove && apt-get autoclean && conda clean -ay && \
+conda clean -ay && \
 echo ". /opt/miniconda/etc/profile.d/conda.sh" >> $SINGULARITY_ENVIRONMENT 
+# apt-get autoremove && apt-get autoclean && conda clean -ay && \
 
 %environment
 export CONDA_DEFAULT_ENV=climaX
