@@ -95,6 +95,9 @@ class GlobalForecastModule(LightningModule):
     def set_test_clim(self, clim):
         self.test_clim = clim
 
+    def set_pred_clim(self, clim):
+        self.pred_clim = clim           
+
     def training_step(self, batch: Any, batch_idx: int):
         x, y, lead_times, variables, out_variables = batch
 
@@ -111,6 +114,16 @@ class GlobalForecastModule(LightningModule):
         loss = loss_dict["loss"]
 
         return loss
+
+
+    def predict_step(self, batch: Any, batch_idx: int):
+        x, y, lead_times, variables, out_variables = batch
+
+        loss_dict, pred = self.net.forward(x, y, lead_times, variables, out_variables, [lat_weighted_mse], lat=self.lat)
+        loss_dict = loss_dict[0]
+        loss = loss_dict["loss"]
+        
+        return x,y, pred    
 
     def validation_step(self, batch: Any, batch_idx: int):
         x, y, lead_times, variables, out_variables = batch

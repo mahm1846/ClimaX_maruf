@@ -63,16 +63,19 @@ class GlobalForecastDataModule(LightningDataModule):
         self.lister_train = list(dp.iter.FileLister(os.path.join(root_dir, "train")))
         self.lister_val = list(dp.iter.FileLister(os.path.join(root_dir, "val")))
         self.lister_test = list(dp.iter.FileLister(os.path.join(root_dir, "test")))
+        self.lister_pred = list(dp.iter.FileLister(os.path.join(root_dir, "pred")))
 
         self.transforms = self.get_normalize()
         self.output_transforms = self.get_normalize(out_variables)
 
         self.val_clim = self.get_climatology("val", out_variables)
         self.test_clim = self.get_climatology("test", out_variables)
+        self.pred_clim = self.get_climatology("pred", out_variables)
 
         self.data_train: Optional[IterableDataset] = None
         self.data_val: Optional[IterableDataset] = None
         self.data_test: Optional[IterableDataset] = None
+        self.data_pred: Optional[IterableDataset] = None
 
     def get_normalize(self, variables=None):
         if variables is None:
@@ -166,6 +169,27 @@ class GlobalForecastDataModule(LightningDataModule):
                 output_transforms=self.output_transforms,
             )
 
+        if not self.data_pred: 
+
+           self.data_pred = IndividualForecastDataIter(
+                Forecast(
+                    NpyReader(
+                        file_list=self.lister_pred,
+                        start_idx=0,
+                        end_idx=1,
+                        variables=self.hparams.variables,
+                        out_variables=self.hparams.out_variables,
+                        shuffle=False,
+                        multi_dataset_training=False,
+                    ),
+                    max_predict_range=self.hparams.predict_range,
+                    random_lead_time=False,
+                    hrs_each_step=self.hparams.hrs_each_step,
+                ),
+                transforms=self.transforms,
+                output_transforms=self.output_transforms,
+            )           
+
     def train_dataloader(self):
         return DataLoader(
             self.data_train,
@@ -197,3 +221,14 @@ class GlobalForecastDataModule(LightningDataModule):
             pin_memory=self.hparams.pin_memory,
             collate_fn=collate_fn,
         )
+
+    def predict_dataloader(self):
+        return DataLoader(
+            self.data_pred,
+            batch_size=self.hparams.batch_size,
+            shuffle=False,
+            drop_last=False,
+            num_workers=self.hparams.num_workers,
+            pin_memory=self.hparams.pin_memory,
+            collate_fn=collate_fn,
+        )         
