@@ -9,6 +9,14 @@ from pytorch_lightning.cli import LightningCLI
 
 
 def main():
+
+    import warnings
+    warnings.filterwarnings("ignore", ".*does not have many workers.*")
+    warnings.filterwarnings("ignore", ".*save_config_overwrite*")
+    warnings.filterwarnings("ignore", ".*LightningCLI.auto_registry*")
+    warnings.filterwarnings("ignore", ".*Trainer already configured with model summary callbacks*")
+    warnings.filterwarnings("ignore", ".*Lightning couldn't infer*")
+
     # Initialize Lightning with the model and data modules, and instruct it to parse the config yml
     cli = LightningCLI(
         model_class=GlobalForecastModule,
